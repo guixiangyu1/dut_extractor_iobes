@@ -402,49 +402,40 @@ def get_chunks(seq, tags):
     chunk_start = None
     for i, tok in enumerate(seq):
         tok = idx_to_tag[tok]
-        if tok=="O" and chunk_start is not None:
-            chunk = (chunk_start, i)
+        if tok=='O':
+            chunk_start = None
+        if tok=='B':
+            chunk_start = i
+        if tok=='I':
+            pass
+        if tok=='S':
+            chunk = (i, i+1)
             chunks.append(chunk)
             chunk_start = None
-        elif tok == "O" and chunk_start is None:
-            pass
-        elif tok == "B" and chunk_start is not None:
-            chunk = (chunk_start, i)
-            chunks.append(chunk)
-            chunk_start = i
-        elif tok == "B" and chunk_start is None:
-            chunk_start = i
-        elif tok == "I":
-            pass
-    if chunk_start is not None:
-        chunk = (chunk_start, len(seq))
-        chunks.append(chunk)
+        if tok=='E':
+            if chunk_start is not None:
+                chunk = (chunk_start, i+1)
+                chunks.append(chunk)
+                chunk_start = None
+            else:
+                pass
     return chunks
 
-    # chunk_type, chunk_start = None, None
-    # for i, tok in enumerate(seq):
-    #     # End of a chunk 1
-    #     if tok == default and chunk_type is not None:
-    #         # Add a chunk.
-    #         chunk = (chunk_type, chunk_start, i)
-    #         chunks.append(chunk)
-    #         chunk_type, chunk_start = None, None
-    #
-    #     # End of a chunk + start of a chunk!
-    #     elif tok != default:
-    #         tok_chunk_class, tok_chunk_type = get_chunk_type(tok, idx_to_tag)
-    #         if chunk_type is None:
-    #             chunk_type, chunk_start = tok_chunk_type, i
-    #         elif tok_chunk_type != chunk_type or tok_chunk_class == "B":
-    #             chunk = (chunk_type, chunk_start, i)
-    #             chunks.append(chunk)
-    #             chunk_type, chunk_start = tok_chunk_type, i
-    #     else:
-    #         pass
+        # if tok=="O" and chunk_start is not None:
+        #     chunk = (chunk_start, i)
+        #     chunks.append(chunk)
+        #     chunk_start = None
+        # elif tok == "O" and chunk_start is None:
+        #     pass
+        # elif tok == "B" and chunk_start is not None:
+        #     chunk = (chunk_start, i)
+        #     chunks.append(chunk)
+        #     chunk_start = i
+        # elif tok == "B" and chunk_start is None:
+        #     chunk_start = i
+        # elif tok == "I":
+        #     pass
 
-    # # end condition
-    # if chunk_type is not None:
-    #     chunk = (chunk_type, chunk_start, len(seq))
-    #     chunks.append(chunk)
-
-    return chunks
+    # if chunk_start is not None:
+    #     chunk_start = None
+    # return chunks
